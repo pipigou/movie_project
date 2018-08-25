@@ -22,7 +22,7 @@ class User(db.Model):
     phone = db.Column(db.String(11), unique=True)
     info = db.Column(db.Text)
     face = db.Column(db.String(255), unique=True)
-    addtime = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    addtime = db.Column(db.DateTime, index=True, default=datetime.now)
     uuid = db.Column(db.String(255), unique=True)
     userlogs = db.relationship('Userlog', backref='user')
     comments = db.relationship('Comment', backref='user')
@@ -38,7 +38,7 @@ class Userlog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     ip = db.Column(db.String(16))
-    addtime = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    addtime = db.Column(db.DateTime, index=True, default=datetime.now)
 
     def __repr__(self):
         return "<Userlog %r>" % self.id
@@ -49,7 +49,7 @@ class Tag(db.Model):
     __tablename__ = "tag"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True)
-    addtime = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    addtime = db.Column(db.DateTime, index=True, default=datetime.now)
     movies = db.relationship("Movie", backref="tag")
 
     def __repr__(self):
@@ -71,9 +71,9 @@ class Movie(db.Model):
     area = db.Column(db.String(255))
     release_time = db.Column(db.Date)
     length = db.Column(db.String(100))
-    addtime = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    addtime = db.Column(db.DateTime, index=True, default=datetime.now)
     comments = db.relationship("Comment", backref="movie")
-    moviecols = comments = db.relationship("Moviecol", backref="movie")
+    moviecols = db.relationship("Moviecol", backref="movie")
 
     def __repr__(self):
         return "<Movie %r>" % self.title
@@ -85,7 +85,7 @@ class Preview(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), unique=True)
     logo = db.Column(db.String(255), unique=True)
-    addtime = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    addtime = db.Column(db.DateTime, index=True, default=datetime.now)
 
     def __repr__(self):
         return "<Preview %r>" % self.title
@@ -98,7 +98,7 @@ class Comment(db.Model):
     content = db.Column(db.Text)
     movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    addtime = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    addtime = db.Column(db.DateTime, index=True, default=datetime.now)
 
     def __repr__(self):
         return "<Comment %r>" % self.id
@@ -110,7 +110,7 @@ class Moviecol(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    addtime = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    addtime = db.Column(db.DateTime, index=True, default=datetime.now)
 
     def __repr__(self):
         return "<Moviecol %r>" % self.id
@@ -122,7 +122,7 @@ class Auth(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True)
     url = db.Column(db.String(255), unique=True)
-    addtime = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    addtime = db.Column(db.DateTime, index=True, default=datetime.now)
 
     def __repr__(self):
         return "<Auth %r>" % self.name
@@ -134,7 +134,7 @@ class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True)
     auths = db.Column(db.String(600))
-    addtime = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    addtime = db.Column(db.DateTime, index=True, default=datetime.now)
     admins = db.relationship("Admin", backref='role')
 
     def __repr__(self):
@@ -149,7 +149,7 @@ class Admin(db.Model):
     pwd = db.Column(db.String(100), unique=True)
     is_super = db.Column(db.SmallInteger)  # 是否为超级管理员，0为超级管理员
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'))
-    addtime = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    addtime = db.Column(db.DateTime, index=True, default=datetime.now)
     adminlogs = db.relationship("Adminlog", backref="admin")
     Oplogs = db.relationship("Oplog", backref="admin")
 
@@ -163,7 +163,7 @@ class Adminlog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     admin_id = db.Column(db.Integer, db.ForeignKey('admin.id'))
     ip = db.Column(db.String(16))
-    addtime = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    addtime = db.Column(db.DateTime, index=True, default=datetime.now)
 
     def __repr__(self):
         return "<Adminlog %r>" % self.id
@@ -176,17 +176,23 @@ class Oplog(db.Model):
     admin_id = db.Column(db.Integer, db.ForeignKey('admin.id'))
     ip = db.Column(db.String(16))
     reason = db.Column(db.String(600))
-    addtime = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    addtime = db.Column(db.DateTime, index=True, default=datetime.now)
 
     def __repr__(self):
         return "<Oplog %r>" % self.id
 
 
 if __name__ == "__main__":
-    db.create_all()
+    # db.create_all()
+    # role = Role(
+    #     name="supermanager",
+    #     auths=''
+    # )
+    # db.session.add(role)
+    # db.session.commit()
     admin = Admin(
-        name='cloudy',
-        pwd=generate_password_hash("hotweather123"),
+        name='pipigou',
+        pwd=generate_password_hash('hotweather123'),
         is_super=0,
         role_id=1
     )
